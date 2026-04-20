@@ -36,6 +36,13 @@ resource "aws_security_group" "ec2_sg" {
         protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
     }
+    #SSH
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
     egress {
         from_port = 0
         to_port = 0
@@ -51,6 +58,7 @@ resource "aws_instance" "application" {
     subnet_id = var.subnet_id
     vpc_security_group_ids = [aws_security_group.ec2_sg.id]
     iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
+    key_name = "manojsshkey"
     tags = {
         Name = "manoj-ssm-ec2machines"
     }
