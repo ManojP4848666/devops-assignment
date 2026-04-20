@@ -3,6 +3,11 @@ const { Client } = require('pg');
 
 const app = express();
 
+app.set('trust proxy', true);
+app.use((req, res, next) => {
+  req.headers['host'] = req.headers['x-forwarded-host'] || req.headers['host'];
+  next();
+});
 const client = new Client({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
