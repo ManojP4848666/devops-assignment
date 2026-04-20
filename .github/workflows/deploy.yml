@@ -28,6 +28,26 @@ jobs:
           exit-code: 0
           ignore-unfixed: true
 
+      - name: Send email on build failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_PASSWORD }}
+          subject: "❌ Build Failed - ${{ github.repository }}"
+          to: ${{ secrets.GMAIL_USER }}
+          from: ${{ secrets.GMAIL_USER }}
+          body: |
+            Build job failed in ${{ github.repository }}
+            
+            Branch: ${{ github.ref }}
+            Commit: ${{ github.sha }}
+            Triggered by: ${{ github.actor }}
+            
+            Check details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
   docker-scan:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -60,6 +80,26 @@ jobs:
           name: trivy-report
           path: trivy-results.sarif
 
+      - name: Send email on docker-scan failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_PASSWORD }}
+          subject: "❌ Docker Scan Failed - ${{ github.repository }}"
+          to: ${{ secrets.GMAIL_USER }}
+          from: ${{ secrets.GMAIL_USER }}
+          body: |
+            Docker scan job failed in ${{ github.repository }}
+            
+            Branch: ${{ github.ref }}
+            Commit: ${{ github.sha }}
+            Triggered by: ${{ github.actor }}
+            
+            Check details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
   deploy:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -86,3 +126,43 @@ jobs:
             -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             -e DB_NAME=${{ secrets.DB_NAME }} \
             devops-app
+
+      - name: Send email on deploy failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_PASSWORD }}
+          subject: "❌ Deploy Failed - ${{ github.repository }}"
+          to: ${{ secrets.GMAIL_USER }}
+          from: ${{ secrets.GMAIL_USER }}
+          body: |
+            Deploy job failed in ${{ github.repository }}
+            
+            Branch: ${{ github.ref }}
+            Commit: ${{ github.sha }}
+            Triggered by: ${{ github.actor }}
+            
+            Check details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      - name: Send email on deploy success
+        if: success()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_PASSWORD }}
+          subject: "✅ Deploy Successful - ${{ github.repository }}"
+          to: ${{ secrets.GMAIL_USER }}
+          from: ${{ secrets.GMAIL_USER }}
+          body: |
+            Deploy successful in ${{ github.repository }}
+            
+            Branch: ${{ github.ref }}
+            Commit: ${{ github.sha }}
+            Triggered by: ${{ github.actor }}
+            
+            Live URL: http://${{ secrets.EC2_HOST }}
