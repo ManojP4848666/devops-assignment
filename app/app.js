@@ -4,7 +4,7 @@ const { Client } = require('pg');
 const app = express();
 
 const client = new Client({
-  host: 'YOUR_RDS_ENDPOINT',
+  host: 'manojdb.chssc8kwme9n.ap-south-1.rds.amazonaws.com',
   user: 'postgres',
   password: 'postgres123',
   database: 'postgres',
