@@ -21,7 +21,7 @@ client.connect()
 app.get('/', async (req, res) => {
   try {
     const result = await client.query('SELECT NOW()');
-    res.send(`DB Time: ${result.rows[0].now}`);
+    res.send(`CI/CD SUCCESS 🚀🔥 | DB Time: ${result.rows[0].now}`);
   } catch (err) {
     res.send("DB error");
   }
