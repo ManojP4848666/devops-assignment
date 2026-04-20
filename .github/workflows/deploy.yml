@@ -1,0 +1,48 @@
+name: CI-CD Pipeline
+
+on:
+  pull_request:
+    branches: [main]
+
+  push:
+    branches: [main]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          cd app
+          npm install
+
+  deploy:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            rm -rf devops-assignment
+            git clone https://github.com/ManojP4848666/devops-assignment.git
+            cd devops-assignment/app
+
+            docker build -t devops-app .
+            docker stop $(docker ps -q) || true
+            docker rm $(docker ps -aq) || true
+            docker run -d -p 80:3000 \
+            -e DB_HOST=${{ secrets.DB_HOST }} \
+            -e DB_USER=${{ secrets.DB_USER }} \
+            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            -e DB_NAME=${{ secrets.DB_NAME }} \
+            devops-app

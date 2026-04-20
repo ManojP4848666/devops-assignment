@@ -4,10 +4,10 @@ const { Client } = require('pg');
 const app = express();
 
 const client = new Client({
-  host: 'manojdb.chssc8kwme9n.ap-south-1.rds.amazonaws.com',
-  user: 'postgres',
-  password: 'postgres123',
-  database: 'postgres',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   port: 5432,
   ssl: {
     rejectUnauthorized: false
